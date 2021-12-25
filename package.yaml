@@ -23,6 +23,9 @@ dependencies:
 - base >= 4.7 && < 5
 - http-conduit
 - http-client
+- aeson
+- lens-aeson
+- lens
 - authenticate-oauth
 - bytestring
 - text

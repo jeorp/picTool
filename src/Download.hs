@@ -23,10 +23,15 @@ downloadPic url path = do
     store path bs c = do
       if B.isInfixOf "image/" c 
         then do 
-          let picType = BS.unpack $ snd $ B.splitAt (B.length "image/") c 
-          fin <- openBinaryFile (path<>"."<>picType) WriteMode
-          hPutStr fin (BS.unpack bs)
-          hClose fin
+          let picType = BS.unpack $ snd $ B.splitAt (B.length "image/") c
+              local = path <> "." <> picType
+          doesExist <- doesFileExist local
+          if doesExist
+            then putStrLn $ local <> " already exists"
+            else do 
+              fin <- openBinaryFile local WriteMode
+              hPutStr fin (BS.unpack bs)
+              hClose fin
         else putStrLn "not picture file"
 
 

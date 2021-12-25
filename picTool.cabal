@@ -26,18 +26,22 @@ source-repository head
 library
   exposed-modules:
       Download
+      GetTweet
   other-modules:
       Paths_picTool
   hs-source-dirs:
       src
   build-depends:
-      authenticate-oauth
+      aeson
+    , authenticate-oauth
     , base >=4.7 && <5
     , bytestring
     , directory
     , hspec
     , http-client
     , http-conduit
+    , lens
+    , lens-aeson
     , strings
     , text
     , time
@@ -51,13 +55,16 @@ executable picTool-exe
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      authenticate-oauth
+      aeson
+    , authenticate-oauth
     , base >=4.7 && <5
     , bytestring
     , directory
     , hspec
     , http-client
     , http-conduit
+    , lens
+    , lens-aeson
     , picTool
     , strings
     , text
@@ -69,18 +76,22 @@ test-suite picTool-test
   main-is: Spec.hs
   other-modules:
       DownloadSpec
+      GetTweetSpec
       Paths_picTool
   hs-source-dirs:
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      authenticate-oauth
+      aeson
+    , authenticate-oauth
     , base >=4.7 && <5
     , bytestring
     , directory
     , hspec
     , http-client
     , http-conduit
+    , lens
+    , lens-aeson
     , picTool
     , strings
     , text
