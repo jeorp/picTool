@@ -25,6 +25,9 @@ dependencies:
 - http-client
 - binary
 - bytestring
+- strings
+- directory
+- time
 - hspec
 
 library:
