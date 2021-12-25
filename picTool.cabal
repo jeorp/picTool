@@ -31,14 +31,15 @@ library
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
-    , binary
+      authenticate-oauth
+    , base >=4.7 && <5
     , bytestring
     , directory
     , hspec
     , http-client
     , http-conduit
     , strings
+    , text
     , time
   default-language: Haskell2010
 
@@ -50,8 +51,8 @@ executable picTool-exe
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
-    , binary
+      authenticate-oauth
+    , base >=4.7 && <5
     , bytestring
     , directory
     , hspec
@@ -59,6 +60,7 @@ executable picTool-exe
     , http-conduit
     , picTool
     , strings
+    , text
     , time
   default-language: Haskell2010
 
@@ -72,8 +74,8 @@ test-suite picTool-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
-    , binary
+      authenticate-oauth
+    , base >=4.7 && <5
     , bytestring
     , directory
     , hspec
@@ -81,5 +83,6 @@ test-suite picTool-test
     , http-conduit
     , picTool
     , strings
+    , text
     , time
   default-language: Haskell2010

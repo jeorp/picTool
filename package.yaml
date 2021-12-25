@@ -23,8 +23,9 @@ dependencies:
 - base >= 4.7 && < 5
 - http-conduit
 - http-client
-- binary
+- authenticate-oauth
 - bytestring
+- text
 - strings
 - directory
 - time
