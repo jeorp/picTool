@@ -34,7 +34,7 @@ downloadPic url = do
       if B.isInfixOf "image/" c 
         then do 
           let picType = BS.unpack $ snd $ B.splitAt (B.length "image/") c 
-          fin <- openBinaryFile (path<>picType) WriteMode
+          fin <- openBinaryFile (path<>"."<>picType) WriteMode
           hPutStr fin (BL.unpack bs)
           hClose fin
         else putStrLn "not picture file"
