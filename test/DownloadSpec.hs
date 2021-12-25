@@ -11,4 +11,4 @@ spec :: Spec
 spec = do
   describe "Test Download picture" $ do
     it "test 1" $ do
-      downloadPic "https://pbs.twimg.com/media/FHcf4AKaIAk5soi?format=jpg&name=large" `shouldReturn` ()
+      downloadPic "https://pbs.twimg.com/media/FHcf4AKaIAk5soi?format=jpg&name=large" "@xxxx_yyyyy" `shouldReturn` ()
