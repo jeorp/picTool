@@ -24,6 +24,7 @@ dependencies:
 - http-conduit
 - http-client
 - aeson
+- aeson-pretty
 - lens-aeson
 - lens
 - authenticate-oauth
