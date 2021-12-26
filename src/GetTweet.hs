@@ -46,7 +46,7 @@ getPicTweet :: T.Text -> IO (Either String Searched)
 getPicTweet q = do
     response <- do
         request <- parseRequest "https://api.twitter.com/1.1/search/tweets.json"
-            -- ++ q -- ++ "&include_entities=true"
+        
         let req = setQueryString [("q", Just (encodeUtf8 q)), ("include_entities", Just "true"), ("count", Just "100"), ("result_type", Just "recent")] request 
         signedReq <- signOAuth myOAuth myCredential req
         manager   <- newManager tlsManagerSettings

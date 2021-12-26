@@ -12,4 +12,5 @@ spec :: Spec
 spec = do
   describe "Test GetTweet" $ do
     it "test 1" $ do
-      execute "from:naco_miyasaka filter:images" `shouldReturn` ()
+      execute "from:ngnchiikawa filter:images" `shouldReturn` ()
+
