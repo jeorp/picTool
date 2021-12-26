@@ -8,6 +8,7 @@ import qualified Data.Text as T
 import Data.Text.Encoding
 import qualified Data.Text.IO as T
 import Data.Maybe 
+import Data.Foldable
 import qualified Data.ByteString.Lazy.Char8 as S8
 import qualified Data.Vector as V
 import Data.Aeson
@@ -31,17 +32,15 @@ instance FromJSON Searched
 instance ToJSON Searched
 
 
-myName = "jhonda_bot" -- botのTwitterアカウント名
-
 myOAuth = newOAuth
     { oauthServerName     = "api.twitter.com"
-    , oauthConsumerKey    = "lTkHxWpCxKXqtKzlT6iRV604y"    -- https://apps.twitter.com/ で取得したやつ
-    , oauthConsumerSecret = "v2ye0jycGBLcWaWxYctumxlO6vsGkqvynJEoSCSyQO35WOnwDY"  -- https://apps.twitter.com/ で取得したやつ
+    , oauthConsumerKey    = "lTkHxWpCxKXqtKzlT6iRV604y"    
+    , oauthConsumerSecret = "v2ye0jycGBLcWaWxYctumxlO6vsGkqvynJEoSCSyQO35WOnwDY"  
     }
 
 myCredential = newCredential
-    "1208753502878482432-NdJumENTv165UqZLixL3r1njuO4Dxo"        -- https://apps.twitter.com/ で取得したやつ
-    "6qnp12Oknm6A6kObhfb1asTWzkjZ7gbFTilzBr2LsU4ZX" -- https://apps.twitter.com/ で取得したやつ
+    "1208753502878482432-NdJumENTv165UqZLixL3r1njuO4Dxo"   
+    "6qnp12Oknm6A6kObhfb1asTWzkjZ7gbFTilzBr2LsU4ZX" 
 
 getPicTweet :: T.Text -> IO (Either String Searched)
 getPicTweet q = do
@@ -71,5 +70,13 @@ execute q = do
   case tl of
     Left err -> error err
     Right s -> do
-      let vals = statuses s ^? _Array
-      S8.putStrLn $ encodePretty $  maybe Null V.head vals 
+      let vals = fromMaybe V.empty $ statuses s ^? _Array
+          urls =  fold $ extractMediaUrls <$> vals
+      print $ V.length vals
+      mapM_ putStrLn urls
+
+extractMediaUrls :: Value -> V.Vector String
+extractMediaUrls val = do
+  let ms = val ^? key "extended_entities" . key "media" . _Array
+      res = fmap T.unpack . (^? key "media_url_https" . _String) <$> fromMaybe V.empty ms  
+    in V.catMaybes res
