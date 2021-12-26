@@ -1,15 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module GetTweet where
 
 import qualified Data.Text as T
 import Data.Text.Encoding
 import qualified Data.Text.IO as T
-
+import Data.Maybe 
 import qualified Data.ByteString.Lazy.Char8 as S8
-
+import qualified Data.Vector as V
 import Data.Aeson
+import Data.Aeson.Lens
+import Control.Lens
 import Data.Aeson.Encode.Pretty
 import GHC.Generics
 import Network.HTTP.Conduit
@@ -21,6 +24,12 @@ newtype Tweet  = Tweet { text :: T.Text
 
 instance FromJSON Tweet
 instance ToJSON Tweet
+
+newtype Searched = Searched {statuses :: Value} deriving (Show, Generic)
+
+instance FromJSON Searched
+instance ToJSON Searched
+
 
 myName = "jhonda_bot" -- botのTwitterアカウント名
 
@@ -34,24 +43,12 @@ myCredential = newCredential
     "1208753502878482432-NdJumENTv165UqZLixL3r1njuO4Dxo"        -- https://apps.twitter.com/ で取得したやつ
     "6qnp12Oknm6A6kObhfb1asTWzkjZ7gbFTilzBr2LsU4ZX" -- https://apps.twitter.com/ で取得したやつ
 
-getHomeTL :: IO (Either String [Value])
-getHomeTL = do
-    response <- do
-        req <-
-            parseRequest
-            $ "https://api.twitter.com/1.1/statuses/home_timeline.json?screen_name="
-            ++ myName
-        signedReq <- signOAuth myOAuth myCredential req
-        manager   <- newManager tlsManagerSettings
-        httpLbs signedReq manager
-    return $ eitherDecode $ responseBody response
-
-getPicTweet :: T.Text -> IO (Either String Value)
+getPicTweet :: T.Text -> IO (Either String Searched)
 getPicTweet q = do
     response <- do
         request <- parseRequest "https://api.twitter.com/1.1/search/tweets.json"
             -- ++ q -- ++ "&include_entities=true"
-        let req = setQueryString [("q", Just (encodeUtf8 q)), ("include_entities", Just "true")] request 
+        let req = setQueryString [("q", Just (encodeUtf8 q)), ("include_entities", Just "true"), ("count", Just "100"), ("result_type", Just "recent")] request 
         signedReq <- signOAuth myOAuth myCredential req
         manager   <- newManager tlsManagerSettings
         httpLbs signedReq manager
@@ -67,10 +64,12 @@ tweet tw = do
     httpLbs signedReq manager
     return ()
 
-execute :: IO ()
-execute = do
-  -- とりあえずホームタイムラインの最新10件を表示する
-  homeTL <- getPicTweet "from:naco_miyasaka filter:images"
-  case homeTL of
+execute :: T.Text -> IO ()
+execute q = do
+
+  tl <- getPicTweet q
+  case tl of
     Left err -> error err
-    Right tl -> S8.putStrLn $ encodePretty $ tl
+    Right s -> do
+      let vals = statuses s ^? _Array
+      S8.putStrLn $ encodePretty $  maybe Null V.head vals 

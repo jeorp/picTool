@@ -46,6 +46,7 @@ library
     , strings
     , text
     , time
+    , vector
   default-language: Haskell2010
 
 executable picTool-exe
@@ -71,6 +72,7 @@ executable picTool-exe
     , strings
     , text
     , time
+    , vector
   default-language: Haskell2010
 
 test-suite picTool-test
@@ -99,4 +101,5 @@ test-suite picTool-test
     , strings
     , text
     , time
+    , vector
   default-language: Haskell2010

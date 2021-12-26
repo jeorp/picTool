@@ -1,7 +1,8 @@
+{-# LANGUAGE OverloadedStrings #-}
 module GetTweetSpec where
 
 import Test.Hspec
-
+import qualified Data.Text as T
 import GetTweet
 
 main :: IO () 
@@ -11,4 +12,4 @@ spec :: Spec
 spec = do
   describe "Test GetTweet" $ do
     it "test 1" $ do
-      execute `shouldReturn` ()
+      execute "from:naco_miyasaka filter:images" `shouldReturn` ()
