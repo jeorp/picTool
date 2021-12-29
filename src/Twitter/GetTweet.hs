@@ -14,15 +14,14 @@ import qualified Data.ByteString as B
 import qualified Data.Vector as V
 import Data.Aeson
 import Data.Aeson.Lens
-import Control.Lens
-import Data.Aeson.Encode.Pretty
+import Control.Lens 
 import GHC.Generics
 import Network.HTTP.Conduit
 import Web.Authenticate.OAuth
 
 import Control.Monad.Reader
 import Control.Monad.IO.Class
-
+import Twitter.Record
 
 class HasToken c where
   entry :: Lens' c String 
@@ -83,10 +82,18 @@ entitiedSearch :: (MonadIO m, MonadReader r m, HasToken r,FromJSON a) =>
 entitiedSearch = search [("include_entities", Just "true"), ("count", Just "100"), ("result_type", Just "recent")]
 
 extractMediaUrls :: Value -> V.Vector String
-extractMediaUrls val = do
+extractMediaUrls val =
   let ms = val ^? key "extended_entities" . key "media" . _Array
       res = fmap T.unpack . (^? key "media_url_https" . _String) <$> fromMaybe V.empty ms  
     in V.catMaybes res
 
 collectMediaUrls :: V.Vector Value -> V.Vector String
 collectMediaUrls = foldMap extractMediaUrls
+
+tweetUserInfo :: Value -> Maybe User
+tweetUserInfo val = 
+  let ms = val ^? key "user"
+  in join $ decode . encode <$> ms
+
+collectUserInfo :: V.Vector Value -> V.Vector User
+collectUserInfo = V.mapMaybe tweetUserInfo

@@ -1,6 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
+import GetToken
+import Download
+import Twitter.GetTweet
+import Twitter.Record
+import Control.Monad.Reader
 
-import Network.HTTP.Simple
 
 main :: IO ()
 main = pure ()
