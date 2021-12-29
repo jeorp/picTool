@@ -42,6 +42,13 @@ packages:
 #
 extra-deps:
 - strings-1.1
+- aeson-2.0.2.0
+- OneTuple-0.3.1
+- extensible-0.8.3
+- incremental-0.3.1
+- membership-0.0.1
+- semialign-1.2.0.1
+
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

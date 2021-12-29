@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module GetTweetSpec where
+module Twitter.GetTweetSpec where
 
 import Test.Hspec
 import qualified Data.Text as T
@@ -10,7 +10,7 @@ import Data.Aeson
 import Data.Aeson.Lens
 import Control.Lens
 import Web.Authenticate.OAuth
-import GetTweet
+import Twitter.GetTweet
 
 myOAuth = newOAuth
     { oauthServerName     = "api.twitter.com"
@@ -22,10 +22,10 @@ myCredential = newCredential
     "1208753502878482432-NdJumENTv165UqZLixL3r1njuO4Dxo"   
     "6qnp12Oknm6A6kObhfb1asTWzkjZ7gbFTilzBr2LsU4ZX" 
 
-execute :: T.Text -> IO ()
-execute q = do
+executeIO :: T.Text -> IO ()
+executeIO q = do
 
-  tl <- entitiedSearch q myOAuth myCredential
+  tl <- entitiedSearchIO q myOAuth myCredential
   case tl of
     Left err -> error err
     Right s -> do
@@ -41,5 +41,5 @@ spec :: Spec
 spec = do
   describe "Test GetTweet" $ do
     it "test 1" $ do
-      execute "from:ngnchiikawa" `shouldReturn` ()
+      executeIO "from:ngnchiikawa" `shouldReturn` ()
 

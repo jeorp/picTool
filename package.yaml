@@ -21,6 +21,13 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+- bytestring
+- text
+- strings
+- vector
+- directory
+- time
+- mtl
 - http-conduit
 - http-client
 - aeson
@@ -28,12 +35,7 @@ dependencies:
 - lens-aeson
 - lens
 - authenticate-oauth
-- bytestring
-- text
-- strings
-- vector
-- directory
-- time
+- extensible
 - hspec
 
 library:
