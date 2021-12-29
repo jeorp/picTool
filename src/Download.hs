@@ -40,3 +40,12 @@ urlToFileName s =
   let xs = strSplitAll "/" s
       ls = if null xs then "error" else last xs
     in ls
+
+eliminate :: String -> String
+eliminate s = 
+  let xs = strSplitAll "." s
+      ls = if null xs then s else head xs
+    in ls
+
+storeFromUrl :: String -> IO ()
+storeFromUrl url = downloadPic url (eliminate $ urlToFileName url)
