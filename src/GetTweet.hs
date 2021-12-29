@@ -9,7 +9,7 @@ import Data.Text.Encoding
 import qualified Data.Text.IO as T
 import Data.Maybe 
 import Data.Foldable
-import qualified Data.ByteString.Lazy.Char8 as S8
+import qualified Data.ByteString as B
 import qualified Data.Vector as V
 import Data.Aeson
 import Data.Aeson.Lens
@@ -32,51 +32,43 @@ instance FromJSON Searched
 instance ToJSON Searched
 
 
-myOAuth = newOAuth
-    { oauthServerName     = "api.twitter.com"
-    , oauthConsumerKey    = "lTkHxWpCxKXqtKzlT6iRV604y"    
-    , oauthConsumerSecret = "v2ye0jycGBLcWaWxYctumxlO6vsGkqvynJEoSCSyQO35WOnwDY"  
-    }
+entry :: String
+entry = "https://api.twitter.com/1.1/"
 
-myCredential = newCredential
-    "1208753502878482432-NdJumENTv165UqZLixL3r1njuO4Dxo"   
-    "6qnp12Oknm6A6kObhfb1asTWzkjZ7gbFTilzBr2LsU4ZX" 
-
-getPicTweet :: T.Text -> IO (Either String Searched)
-getPicTweet q = do
+getTweets :: String -> [(B.ByteString, Maybe B.ByteString)] -> OAuth -> Credential -> IO (Either String Searched)
+getTweets url set_q oauth credential = do
     response <- do
-        request <- parseRequest "https://api.twitter.com/1.1/search/tweets.json"
+        request <- parseRequest $ entry <> url
         
-        let req = setQueryString [("q", Just (encodeUtf8 q)), ("include_entities", Just "true"), ("count", Just "100"), ("result_type", Just "recent")] request 
-        signedReq <- signOAuth myOAuth myCredential req
+        let req = setQueryString set_q request 
+        signedReq <- signOAuth oauth credential req
         manager   <- newManager tlsManagerSettings
         httpLbs signedReq manager
-    --print response
     return $ eitherDecode $ responseBody response
 
-tweet :: T.Text -> IO ()
-tweet tw = do
-    req     <- parseRequest "https://api.twitter.com/1.1/statuses/update.json"
+tweetText :: T.Text -> OAuth -> Credential -> IO ()
+tweetText tw oauth credential = do
+    req     <- parseRequest $ entry <> "statuses/update.json"
     manager <- newManager tlsManagerSettings
     let postReq = urlEncodedBody [("status", encodeUtf8 tw)] req
-    signedReq <- signOAuth myOAuth myCredential postReq
+    signedReq <- signOAuth oauth credential postReq
     httpLbs signedReq manager
     return ()
 
-execute :: T.Text -> IO ()
-execute q = do
 
-  tl <- getPicTweet q
-  case tl of
-    Left err -> error err
-    Right s -> do
-      let vals = fromMaybe V.empty $ statuses s ^? _Array
-          urls =  fold $ extractMediaUrls <$> vals
-      print $ V.length vals
-      mapM_ putStrLn urls
+-- ex set_q - [("include_entities", Just "true"), ("count", Just "100"), ("result_type", Just "recent")]
+search ::  [(B.ByteString, Maybe B.ByteString)] -> T.Text -> OAuth -> Credential -> IO (Either String Searched)
+search set_q text = getTweets "search/tweets.json" (("q", Just (encodeUtf8 text)) : set_q)
+
+entitiedSearch :: T.Text -> OAuth -> Credential -> IO (Either String Searched)
+entitiedSearch = search [("include_entities", Just "true"), ("count", Just "100"), ("result_type", Just "recent")]
+
 
 extractMediaUrls :: Value -> V.Vector String
 extractMediaUrls val = do
   let ms = val ^? key "extended_entities" . key "media" . _Array
       res = fmap T.unpack . (^? key "media_url_https" . _String) <$> fromMaybe V.empty ms  
     in V.catMaybes res
+
+collectMediaUrls :: V.Vector Value -> V.Vector String
+collectMediaUrls = foldMap extractMediaUrls
