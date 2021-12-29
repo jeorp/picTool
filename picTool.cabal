@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Common
       Download
       GetToken
       Twitter.GetTweet
@@ -36,6 +37,7 @@ library
   build-depends:
       aeson
     , aeson-pretty
+    , attoparsec
     , authenticate-oauth
     , base >=4.7 && <5
     , bytestring
@@ -63,6 +65,7 @@ executable picTool-exe
   build-depends:
       aeson
     , aeson-pretty
+    , attoparsec
     , authenticate-oauth
     , base >=4.7 && <5
     , bytestring
@@ -86,6 +89,7 @@ test-suite picTool-test
   main-is: Spec.hs
   other-modules:
       DownloadSpec
+      GetTokenSpec
       Twitter.GetTweetSpec
       Paths_picTool
   hs-source-dirs:
@@ -94,6 +98,7 @@ test-suite picTool-test
   build-depends:
       aeson
     , aeson-pretty
+    , attoparsec
     , authenticate-oauth
     , base >=4.7 && <5
     , bytestring

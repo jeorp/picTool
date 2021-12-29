@@ -35,6 +35,7 @@ dependencies:
 - lens-aeson
 - lens
 - authenticate-oauth
+- attoparsec
 - extensible
 - hspec
 
