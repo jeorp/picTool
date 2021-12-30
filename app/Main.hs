@@ -4,6 +4,7 @@
 import qualified Data.ByteString as B
 
 --import Data.Extensible.GetOpt
+import Control.Concurrent.Async
 import Data.Either
 import Data.Aeson
 import Data.Aeson.Lens
@@ -12,38 +13,45 @@ import qualified Data.Text as T
 import qualified Data.ByteString.Char8 as BS 
 import qualified Data.Vector as V
 import Data.Maybe
-import Control.Lens hiding ((:>))
+import System.Directory
+import Control.Lens
 import GetToken
 import Common
 import Download
 import Twitter.GetTweet
-import Twitter.Record
 import Control.Monad.Reader
 
 
-type Ap = ReaderT Config IO
+type App = ReaderT Config IO
 
-run :: Ap () -> IO ()
+run :: App () -> IO ()
 run app = do
   config <- extract
   let init = fromRight defaultConfig config
   runReaderT app init
 
-searchAndStoreApp :: T.Text -> Ap ()
+searchAndStoreApp :: T.Text -> App ()
 searchAndStoreApp text = do
-  e <- entitiedSearch text :: Ap (Either String Searched)
+  e <- entitiedSearch text :: App (Either String Searched)
   case e of
     Left l -> liftIO $ print l
     Right r -> do
       let vals = fromMaybe V.empty $ statuses r ^? _Array
           urls =  collectMediaUrls vals
-      liftIO $ mapM_ storeFromUrl urls
+      config <- ask 
+      liftIO $ do
+        putStrLn $ "Start donwload ..\n" <>  show (V.length urls) <> " puctures ..., please wait"
+        mapConcurrently_ (storeFromUrl $ config ^. temp) urls
+        putStrLn "\nfinish"
 
-app :: Ap ()
+
+app :: App ()
 app = do
+  liftIO $ putStrLn "Please input word - ex: クリスマス"
+  s <- liftIO getLine
   config <- ask
-  liftIO $ print $ config ^. credentiall 
-  searchAndStoreApp "クリスマス"
+  liftIO $ doesDirectoryExist (config ^. temp) >>= flip unless (createDirectory $ config ^. temp)
+  searchAndStoreApp $ T.pack s
 
 main :: IO ()
 main = run app

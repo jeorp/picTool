@@ -37,6 +37,7 @@ library
   build-depends:
       aeson
     , aeson-pretty
+    , async
     , attoparsec
     , authenticate-oauth
     , base >=4.7 && <5
@@ -66,6 +67,7 @@ executable picTool-exe
   build-depends:
       aeson
     , aeson-pretty
+    , async
     , attoparsec
     , authenticate-oauth
     , base >=4.7 && <5
@@ -100,6 +102,7 @@ test-suite picTool-test
   build-depends:
       aeson
     , aeson-pretty
+    , async
     , attoparsec
     , authenticate-oauth
     , base >=4.7 && <5

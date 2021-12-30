@@ -17,13 +17,7 @@ import Web.Authenticate.OAuth
 extractText :: Parser Text 
 extractText = takeTill isEndOfLine 
 
-{- entry:WWWWWWW
-oauthServerName:TGTFTFTFTFTFT
-authConsumerKey:QEEEEEE
-oauthConsumerSecret:QQQQQQQ
-token:SSSSSSSSSS
-tokenSecret:AAAAAAAAAA
--}
+
 entryLabel :: Parser Text
 entryLabel = "entry:" *> extractText
 
@@ -59,7 +53,7 @@ configParser = do
           oauthConsumerSecret = encodeUtf8 ocs
         }
       cre = newCredential (encodeUtf8 tok) (encodeUtf8 tos)
-    in pure $ Config en oa cre
+    in pure $ Config "temp/" en oa cre
 
 
 extract :: IO (Either String Config)

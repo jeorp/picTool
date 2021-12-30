@@ -11,6 +11,7 @@ configFile = "config.env"
 
 data Config = Config 
   {
+    _temp :: FilePath,
     _entry :: String,
     _oauth :: OAuth,
     _credential :: Credential
@@ -18,6 +19,7 @@ data Config = Config
 
 defaultConfig = Config 
     {
+      _temp = "",
       _entry = "",
       _oauth = newOAuth 
         {
