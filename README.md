@@ -3,7 +3,7 @@
 Download picures from twitter  
 
 - How to use  
-add config.env as like below   
+add config.env to project root as like below   
   
      
      
