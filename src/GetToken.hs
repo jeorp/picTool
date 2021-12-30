@@ -37,10 +37,10 @@ oauthConsumerSecretLabel :: Parser Text
 oauthConsumerSecretLabel = "oauthConsumerSecret:" *> extractText
 
 tokenLabel :: Parser Text
-tokenLabel = "token:" *> extractText
+tokenLabel = "oauth_token:" *> extractText
 
 tokenSecretLabel :: Parser Text
-tokenSecretLabel = "tokenSecret:" *> extractText
+tokenSecretLabel = "oauth_token_secret:" *> extractText
 
 configParser :: Parser Config
 configParser = do

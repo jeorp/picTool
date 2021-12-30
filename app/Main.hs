@@ -16,7 +16,6 @@ import Control.Lens hiding ((:>))
 import GetToken
 import Common
 import Download
---import Download
 import Twitter.GetTweet
 import Twitter.Record
 import Control.Monad.Reader
@@ -42,7 +41,9 @@ searchAndStoreApp text = do
 
 app :: Ap ()
 app = do
-  searchAndStoreApp "クリスマス"
+  config <- ask
+  liftIO $ print $ config ^. credentiall 
+  searchAndStoreApp "声優"
 
 main :: IO ()
 main = run app
