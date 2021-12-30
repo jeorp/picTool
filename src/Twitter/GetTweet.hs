@@ -20,27 +20,33 @@ import Network.HTTP.Conduit
 import Web.Authenticate.OAuth
 
 import Control.Monad.Reader
-import Control.Monad.IO.Class
 import Twitter.Record
+import Common
+
+makeLenses ''Config
 
 class HasToken c where
-  entry :: Lens' c String 
-  oauth :: Lens' c OAuth
-  credential :: Lens' c Credential
+  entryl :: Lens' c String 
+  oauthl :: Lens' c OAuth
+  credentiall :: Lens' c Credential
 
+instance HasToken Config where
+  entryl = entry
+  oauthl = oauth
+  credentiall = credential
 
 newtype Searched = Searched {statuses :: Value} deriving (Show, Generic)
 
 instance FromJSON Searched
 instance ToJSON Searched
 
-entry_ :: String
-entry_ = "https://api.twitter.com/1.1/"
+entry' :: String
+entry' = "https://api.twitter.com/1.1/"
 
 getTweetsIO :: FromJSON a => String -> [(B.ByteString, Maybe B.ByteString)] -> OAuth -> Credential -> IO (Either String a)
 getTweetsIO url set_q oauth credential = do
     response <- do
-        request <- parseRequest $ entry_ <> url
+        request <- parseRequest $ entry' <> url
         
         let req = setQueryString set_q request 
         signedReq <- signOAuth oauth credential req
@@ -51,14 +57,21 @@ getTweetsIO url set_q oauth credential = do
 getTweets :: (MonadIO m, MonadReader r m, HasToken r,FromJSON a) => String -> [(B.ByteString, Maybe B.ByteString)] -> m (Either String a)
 getTweets url set_q = do
   config <- ask
-  let entry_ = config ^. entry
-      oauth_ = config ^. oauth
-      credential_ = config ^. credential
-  liftIO $ getTweetsIO (entry_ <> url) set_q oauth_ credential_
+  let entry_ = config ^. entryl
+      oauth_ = config ^. oauthl
+      credential_ = config ^. credentiall
+  response <- do
+    liftIO $ do
+      request <- parseRequest $ entry_ <> url
+      let req = setQueryString set_q request 
+      signedReq <- signOAuth oauth_ credential_ req
+      manager   <- newManager tlsManagerSettings
+      httpLbs signedReq manager
+  return $ eitherDecode $ responseBody response
 
 tweetTextIO :: T.Text -> OAuth -> Credential -> IO ()
 tweetTextIO tw oauth credential = do
-    req     <- parseRequest $ entry_ <> "statuses/update.json"
+    req     <- parseRequest $ entry' <> "statuses/update.json"
     manager <- newManager tlsManagerSettings
     let postReq = urlEncodedBody [("status", encodeUtf8 tw)] req
     signedReq <- signOAuth oauth credential postReq

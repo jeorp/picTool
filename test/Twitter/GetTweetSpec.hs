@@ -16,13 +16,13 @@ import Twitter.GetTweet
 
 myOAuth = newOAuth
     { oauthServerName     = "api.twitter.com"
-    , oauthConsumerKey    = "lTkHxWpCxKXqtKzlT6iRV604y"    
-    , oauthConsumerSecret = "v2ye0jycGBLcWaWxYctumxlO6vsGkqvynJEoSCSyQO35WOnwDY"  
+    , oauthConsumerKey    = "XXXXXXXXXXXXXXXXXXXX"    
+    , oauthConsumerSecret = "YYYYYYYYYYYYYYYYYYYYYYY"  
     }
 
 myCredential = newCredential
-    "1208753502878482432-NdJumENTv165UqZLixL3r1njuO4Dxo"   
-    "6qnp12Oknm6A6kObhfb1asTWzkjZ7gbFTilzBr2LsU4ZX" 
+    "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"   
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" 
 
 executeSearchIO :: T.Text -> IO ()
 executeSearchIO q = do

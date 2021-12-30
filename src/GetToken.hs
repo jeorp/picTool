@@ -8,6 +8,7 @@ import Prelude hiding (readFile)
 import Data.Text 
 import Data.Text.Encoding
 import qualified Data.ByteString as B
+import qualified Data.ByteString.Char8 as BS
 import Data.Char
 import Data.Text.IO
 import Data.Attoparsec.Text
@@ -16,35 +17,49 @@ import Web.Authenticate.OAuth
 extractText :: Parser Text 
 extractText = takeTill isEndOfLine 
 
-channellabel :: Parser Text
-channellabel = "entry:" *> extractText
+{- entry:WWWWWWW
+oauthServerName:TGTFTFTFTFTFT
+authConsumerKey:QEEEEEE
+oauthConsumerSecret:QQQQQQQ
+token:SSSSSSSSSS
+tokenSecret:AAAAAAAAAA
+-}
+entryLabel :: Parser Text
+entryLabel = "entry:" *> extractText
 
-discordBotTokenlabel :: Parser Text
-discordBotTokenlabel = "discord_bot_token:" *> extractText
+oauthServerNameLabel :: Parser Text
+oauthServerNameLabel = "oauthServerName:" *> extractText
 
-gmoApiKeyLable :: Parser Text
-gmoApiKeyLable = "gmo_api_key:" *> extractText
+authConsumerKeyLabel :: Parser Text
+authConsumerKeyLabel = "authConsumerKey:" *> extractText
 
-gmoApiSecretLable :: Parser Text
-gmoApiSecretLable = "gmo_api_secret:" *> extractText
+oauthConsumerSecretLabel :: Parser Text
+oauthConsumerSecretLabel = "oauthConsumerSecret:" *> extractText
 
+tokenLabel :: Parser Text
+tokenLabel = "token:" *> extractText
+
+tokenSecretLabel :: Parser Text
+tokenSecretLabel = "tokenSecret:" *> extractText
 
 configParser :: Parser Config
-configParser = do 
-  (a, b) <- (,) <$>
-      channellabel <* endOfLine <*>
-      discordBotTokenlabel <* endOfLine
-  (c, d) <- (,) <$>        
-      gmoApiKeyLable <* endOfLine <*>         
-      gmoApiSecretLable
-  let oa = newOAuth 
+configParser = do
+  en_ <- entryLabel <* endOfLine
+  sname <- oauthServerNameLabel <* endOfLine
+  ockey <- authConsumerKeyLabel <* endOfLine
+  ocs <- oauthConsumerSecretLabel <* endOfLine
+  tok <- tokenLabel <* endOfLine
+  tos <- tokenSecretLabel
+
+  let en = BS.unpack $ encodeUtf8 en_
+      oa = newOAuth 
         {
-          oauthServerName = "api.twitter.com",
-          oauthConsumerKey = encodeUtf8 a,
-          oauthConsumerSecret = encodeUtf8 b
+          oauthServerName = unpack sname,
+          oauthConsumerKey = encodeUtf8 ockey,
+          oauthConsumerSecret = encodeUtf8 ocs
         }
-      cre = newCredential (encodeUtf8 c) (encodeUtf8 d)
-    in pure $ Config oa cre
+      cre = newCredential (encodeUtf8 tok) (encodeUtf8 tos)
+    in pure $ Config en oa cre
 
 
 extract :: IO (Either String Config)
