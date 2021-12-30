@@ -2,7 +2,7 @@
 
 Download picures from twitter  
 
-- How to use -    
+- How to use  
 add config.env as like below   
   
      
