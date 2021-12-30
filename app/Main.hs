@@ -43,7 +43,7 @@ app :: Ap ()
 app = do
   config <- ask
   liftIO $ print $ config ^. credentiall 
-  searchAndStoreApp "声優"
+  searchAndStoreApp "クリスマス"
 
 main :: IO ()
 main = run app

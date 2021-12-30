@@ -16,7 +16,6 @@ downloadPic url path = do
   let xs = getResponseHeader "Content-Type" res
       file = getResponseBody res
       contentType = if not (null xs) then head xs else ""
-  print contentType
   store outFile file contentType
   where
     store :: FilePath -> B.ByteString -> B.ByteString -> IO ()

@@ -54,7 +54,7 @@ getTweetsIO url set_q oauth credential = do
         httpLbs signedReq manager
     return $ eitherDecode $ responseBody response
 
-getTweets :: (MonadIO m, MonadReader r m, HasToken r,FromJSON a) => String -> [(B.ByteString, Maybe B.ByteString)] -> m (Either String a)
+getTweets :: (MonadIO m, MonadReader r m, HasToken r, FromJSON a) => String -> [(B.ByteString, Maybe B.ByteString)] -> m (Either String a)
 getTweets url set_q = do
   config <- ask
   let entry_ = config ^. entryl
@@ -83,14 +83,14 @@ tweetTextIO tw oauth credential = do
 searchIO ::  [(B.ByteString, Maybe B.ByteString)] -> T.Text -> OAuth -> Credential -> IO (Either String Searched)
 searchIO set_q text = getTweetsIO "search/tweets.json" (("q", Just (encodeUtf8 text)) : set_q)
 
-search :: (MonadIO m, MonadReader r m, HasToken r,FromJSON a) => 
+search :: (MonadIO m, MonadReader r m, HasToken r, FromJSON a) => 
                [(B.ByteString, Maybe B.ByteString)] -> T.Text -> m (Either String a)
 search set_q text = getTweets "search/tweets.json" (("q", Just (encodeUtf8 text)) : set_q)
 
 entitiedSearchIO :: T.Text -> OAuth -> Credential -> IO (Either String Searched)
 entitiedSearchIO = searchIO [("include_entities", Just "true"), ("count", Just "100"), ("result_type", Just "recent")]
 
-entitiedSearch :: (MonadIO m, MonadReader r m, HasToken r,FromJSON a) => 
+entitiedSearch :: (MonadIO m, MonadReader r m, HasToken r, FromJSON a) => 
                T.Text -> m (Either String a)
 entitiedSearch = search [("include_entities", Just "true"), ("count", Just "100"), ("result_type", Just "recent")]
 
